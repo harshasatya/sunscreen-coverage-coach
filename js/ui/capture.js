@@ -13,6 +13,7 @@ import { getCurrentUVIndex, requestGeolocation,
          describeUV }                                    from '../uv-api.js';
 import { getSettings }                                   from '../storage.js';
 import { setResult }                                     from './results.js';
+import * as runtime                                      from '../llm/runtime.js';
 
 let _stopDetection = null;
 
@@ -63,6 +64,13 @@ export async function mount(navigate) {
     <button class="btn btn-primary mt-2" id="capture-btn" style="width:100%">
       ${preciseMode ? '📸 Capture Baseline' : '📸 Capture'}
     </button>
+
+    <div id="model-progress" style="display:none; margin-top:.5rem">
+      <div style="background:#eee; border-radius:8px; height:6px; overflow:hidden">
+        <div id="model-progress-bar" style="height:100%; background:var(--color-primary); width:0%; transition:width .3s"></div>
+      </div>
+      <p id="model-progress-label" class="text-secondary" style="font-size:.75rem; text-align:center; margin-top:.25rem"></p>
+    </div>
 
     <div id="status-msg" class="text-secondary mt-1" style="font-size:.8rem; text-align:center; min-height:1.2em" aria-live="polite"></div>
 
@@ -129,14 +137,39 @@ export function unmount() {
   if (_stopDetection) { _stopDetection(); _stopDetection = null; }
 }
 
+// ─── Model progress UI ────────────────────────────────────────────────────────
+
+function _showModelProgress(pct, label) {
+  const wrap  = document.getElementById('model-progress');
+  const bar   = document.getElementById('model-progress-bar');
+  const lbl   = document.getElementById('model-progress-label');
+  if (!wrap) return;
+  wrap.style.display = pct >= 1 ? 'none' : 'block';
+  if (bar) bar.style.width = `${Math.round(pct * 100)}%`;
+  if (lbl) lbl.textContent = label;
+}
+
+function _modelProgressCallback(p) {
+  const pct = Math.min(p, 0.999); // keep bar visible until fully done
+  const label = pct < 0.05
+    ? 'Loading AI model…'
+    : `Downloading AI model — ${Math.round(pct * 100)}%`;
+  _showModelProgress(pct, label);
+}
+
 // ─── Quick Mode ───────────────────────────────────────────────────────────────
 
 async function _doQuickCapture(videoEl, captureBtn, statusMsg, navigate, settings) {
   captureBtn.disabled    = true;
-  captureBtn.textContent = 'Analyzing…';
+  captureBtn.textContent = 'Loading AI…';
   statusMsg.textContent  = '';
 
   try {
+    // Load model with visible progress bar (no-op if already loaded)
+    await runtime.loadModel(_modelProgressCallback);
+    _showModelProgress(1, '');
+
+    captureBtn.textContent = 'Analyzing…';
     const result = await analyze(videoEl, {
       skinTone:      settings.skinTone,
       sunscreenType: settings.sunscreenType,
@@ -150,6 +183,7 @@ async function _doQuickCapture(videoEl, captureBtn, statusMsg, navigate, setting
     captureBtn.disabled    = false;
     captureBtn.textContent = '📸 Capture';
     statusMsg.textContent  = `Error: ${err.message}`;
+    _showModelProgress(1, '');
   }
 }
 
@@ -168,7 +202,6 @@ function _runPreciseMode(videoEl, captureBtn, statusMsg, navigate, settings) {
       try {
         baselineDataUrl   = captureFrame(videoEl);
         baselineLandmarks = landmarksToNormalized(getLastResult());
-        // Advance UI to step 2
         const stepLabel = document.getElementById('precise-step-label');
         const stepDesc  = document.getElementById('precise-step-desc');
         if (stepLabel) stepLabel.textContent = 'Step 2 of 2 — After applying sunscreen';
@@ -182,10 +215,14 @@ function _runPreciseMode(videoEl, captureBtn, statusMsg, navigate, settings) {
         statusMsg.textContent  = `Error: ${err.message}`;
       }
     } else {
-      // Step 2: analyze with differential
-      captureBtn.textContent = 'Analyzing…';
+      // Step 2: load model then analyze with differential
+      captureBtn.textContent = 'Loading AI…';
       statusMsg.textContent  = '';
       try {
+        await runtime.loadModel(_modelProgressCallback);
+        _showModelProgress(1, '');
+
+        captureBtn.textContent = 'Analyzing…';
         const result = await analyze(videoEl, {
           skinTone:          settings.skinTone,
           sunscreenType:     settings.sunscreenType,
@@ -201,6 +238,7 @@ function _runPreciseMode(videoEl, captureBtn, statusMsg, navigate, settings) {
         captureBtn.disabled    = false;
         captureBtn.textContent = '📸 Capture After';
         statusMsg.textContent  = `Error: ${err.message}`;
+        _showModelProgress(1, '');
       }
     }
   });

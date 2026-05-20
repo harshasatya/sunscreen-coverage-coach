@@ -7,7 +7,7 @@
     default-src 'self';
     script-src 'self' cdn.jsdelivr.net storage.googleapis.com 'unsafe-inline' 'wasm-unsafe-eval';
     style-src 'self' 'unsafe-inline';
-    connect-src 'self' api.anthropic.com api.open-meteo.com cdn.jsdelivr.net storage.googleapis.com huggingface.co;
+    connect-src 'self' api.anthropic.com api.open-meteo.com cdn.jsdelivr.net storage.googleapis.com huggingface.co *.huggingface.co;
     img-src 'self' blob: data:;
     media-src 'self' blob:;
     worker-src 'self' blob:;
