@@ -1,0 +1,230 @@
+{
+  "version": "1.0.0",
+  "pairs": [
+    ["left-forehead", "right-forehead"],
+    ["left-temple", "right-temple"],
+    ["left-cheek", "right-cheek"],
+    ["left-undereye", "right-undereye"],
+    ["left-nasolabial", "right-nasolabial"],
+    ["left-upper-lip", "right-upper-lip"],
+    ["left-lower-lip-corner", "right-lower-lip-corner"],
+    ["left-chin-side", "right-chin-side"],
+    ["left-jawline", "right-jawline"],
+    ["left-ear-zone", "right-ear-zone"]
+  ],
+  "zones": [
+    {
+      "id": "left-forehead",
+      "label": "Left Forehead",
+      "side": "left",
+      "landmark_indices": [70, 63, 105, 66, 107, 55, 193],
+      "uv_risk": "high"
+    },
+    {
+      "id": "right-forehead",
+      "label": "Right Forehead",
+      "side": "right",
+      "landmark_indices": [300, 293, 334, 296, 336, 285, 417],
+      "uv_risk": "high"
+    },
+    {
+      "id": "center-forehead",
+      "label": "Center Forehead",
+      "side": "center",
+      "landmark_indices": [10, 67, 109, 103, 104, 54, 21, 162, 389, 251, 284, 332, 333, 297, 338],
+      "uv_risk": "high"
+    },
+    {
+      "id": "left-temple",
+      "label": "Left Temple",
+      "side": "left",
+      "landmark_indices": [162, 127, 234, 93, 132, 58, 172],
+      "uv_risk": "high"
+    },
+    {
+      "id": "right-temple",
+      "label": "Right Temple",
+      "side": "right",
+      "landmark_indices": [389, 356, 454, 323, 361, 288, 397],
+      "uv_risk": "high"
+    },
+    {
+      "id": "left-cheek",
+      "label": "Left Cheek",
+      "side": "left",
+      "landmark_indices": [116, 123, 147, 213, 192, 214, 210, 57, 43, 106, 182],
+      "uv_risk": "medium"
+    },
+    {
+      "id": "right-cheek",
+      "label": "Right Cheek",
+      "side": "right",
+      "landmark_indices": [345, 352, 376, 433, 416, 434, 430, 287, 273, 335, 406],
+      "uv_risk": "medium"
+    },
+    {
+      "id": "left-undereye",
+      "label": "Left Under-Eye",
+      "side": "left",
+      "landmark_indices": [130, 247, 30, 29, 27, 28, 56, 190, 243, 173, 157, 158, 159, 160, 161, 246],
+      "uv_risk": "medium"
+    },
+    {
+      "id": "right-undereye",
+      "label": "Right Under-Eye",
+      "side": "right",
+      "landmark_indices": [359, 467, 260, 259, 257, 258, 286, 414, 463, 398, 384, 385, 386, 387, 388, 466],
+      "uv_risk": "medium"
+    },
+    {
+      "id": "nose-bridge",
+      "label": "Nose Bridge",
+      "side": "center",
+      "landmark_indices": [6, 197, 195, 5, 4, 1, 44, 274, 19, 94],
+      "uv_risk": "high"
+    },
+    {
+      "id": "nose-tip",
+      "label": "Nose Tip",
+      "side": "center",
+      "landmark_indices": [1, 2, 98, 327, 49, 279, 48, 278, 45, 275],
+      "uv_risk": "high"
+    },
+    {
+      "id": "left-nasolabial",
+      "label": "Left Nasolabial Fold",
+      "side": "left",
+      "landmark_indices": [36, 205, 206, 207, 208, 216, 212, 202, 204, 194],
+      "uv_risk": "medium"
+    },
+    {
+      "id": "right-nasolabial",
+      "label": "Right Nasolabial Fold",
+      "side": "right",
+      "landmark_indices": [266, 425, 426, 427, 428, 436, 432, 422, 424, 418],
+      "uv_risk": "medium"
+    },
+    {
+      "id": "philtrum",
+      "label": "Philtrum",
+      "side": "center",
+      "landmark_indices": [0, 267, 37, 39, 40, 185, 61, 146, 91, 181],
+      "uv_risk": "low"
+    },
+    {
+      "id": "upper-lip-center",
+      "label": "Upper Lip Center",
+      "side": "center",
+      "landmark_indices": [0, 267, 269, 270, 409, 291, 37, 39, 40, 185],
+      "uv_risk": "low"
+    },
+    {
+      "id": "left-upper-lip",
+      "label": "Left Upper Lip Corner",
+      "side": "left",
+      "landmark_indices": [61, 185, 40, 39, 37, 0, 267, 269, 270, 409],
+      "uv_risk": "low"
+    },
+    {
+      "id": "right-upper-lip",
+      "label": "Right Upper Lip Corner",
+      "side": "right",
+      "landmark_indices": [291, 409, 270, 269, 267, 0, 37, 39, 40, 185],
+      "uv_risk": "low"
+    },
+    {
+      "id": "lower-lip-center",
+      "label": "Lower Lip Center",
+      "side": "center",
+      "landmark_indices": [17, 314, 405, 321, 375, 84, 181, 91, 146, 61],
+      "uv_risk": "low"
+    },
+    {
+      "id": "left-lower-lip-corner",
+      "label": "Left Lower Lip Corner",
+      "side": "left",
+      "landmark_indices": [61, 146, 91, 181, 84, 17, 314, 405, 321, 375],
+      "uv_risk": "low"
+    },
+    {
+      "id": "right-lower-lip-corner",
+      "label": "Right Lower Lip Corner",
+      "side": "right",
+      "landmark_indices": [291, 375, 321, 405, 314, 17, 84, 181, 91, 146],
+      "uv_risk": "low"
+    },
+    {
+      "id": "chin-center",
+      "label": "Chin Center",
+      "side": "center",
+      "landmark_indices": [175, 152, 148, 176, 149, 150, 136, 172, 58, 132],
+      "uv_risk": "medium"
+    },
+    {
+      "id": "left-chin-side",
+      "label": "Left Chin Side",
+      "side": "left",
+      "landmark_indices": [172, 136, 150, 149, 176, 148, 152, 175, 140, 171],
+      "uv_risk": "medium"
+    },
+    {
+      "id": "right-chin-side",
+      "label": "Right Chin Side",
+      "side": "right",
+      "landmark_indices": [397, 365, 379, 378, 400, 377, 152, 175, 369, 396],
+      "uv_risk": "medium"
+    },
+    {
+      "id": "left-jawline",
+      "label": "Left Jawline",
+      "side": "left",
+      "landmark_indices": [172, 58, 132, 93, 234, 127, 162, 21, 54, 103],
+      "uv_risk": "medium"
+    },
+    {
+      "id": "right-jawline",
+      "label": "Right Jawline",
+      "side": "right",
+      "landmark_indices": [397, 288, 361, 323, 454, 356, 389, 251, 284, 332],
+      "uv_risk": "medium"
+    },
+    {
+      "id": "left-ear-zone",
+      "label": "Left Ear Zone",
+      "side": "left",
+      "landmark_indices": [234, 127, 162, 93, 132, 58, 172, 136, 150, 149],
+      "uv_risk": "high"
+    },
+    {
+      "id": "right-ear-zone",
+      "label": "Right Ear Zone",
+      "side": "right",
+      "landmark_indices": [454, 356, 389, 323, 361, 288, 397, 365, 379, 378],
+      "uv_risk": "high"
+    },
+    {
+      "id": "neck-center",
+      "label": "Neck Center",
+      "side": "center",
+      "landmark_indices": [],
+      "uv_risk": "high",
+      "_note": "MediaPipe mesh stops at jawline; neck region estimated below chin landmarks in Phase 2"
+    },
+    {
+      "id": "left-neck-side",
+      "label": "Left Neck Side",
+      "side": "left",
+      "landmark_indices": [],
+      "uv_risk": "high",
+      "_note": "MediaPipe mesh stops at jawline; estimated offset below left jaw landmarks in Phase 2"
+    },
+    {
+      "id": "right-neck-side",
+      "label": "Right Neck Side",
+      "side": "right",
+      "landmark_indices": [],
+      "uv_risk": "high",
+      "_note": "MediaPipe mesh stops at jawline; estimated offset below right jaw landmarks in Phase 2"
+    }
+  ]
+}

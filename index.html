@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self' cdn.jsdelivr.net storage.googleapis.com 'unsafe-inline' 'wasm-unsafe-eval';
+    style-src 'self' 'unsafe-inline';
+    connect-src 'self' api.anthropic.com api.open-meteo.com cdn.jsdelivr.net storage.googleapis.com huggingface.co;
+    img-src 'self' blob: data:;
+    media-src 'self' blob:;
+    worker-src 'self' blob:;
+    font-src 'self';
+  ">
+
+  <title>Sunscreen Coverage Coach</title>
+  <meta name="description" content="Estimates sunscreen coverage gaps on your face using on-device AI.">
+  <meta name="theme-color" content="#FF6B35">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="SunCoach">
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="assets/icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app">
+
+    <!-- ── Onboarding ─────────────────────────────────────────────── -->
+    <section data-route="onboarding" aria-label="Onboarding"></section>
+
+    <!-- ── Capture ────────────────────────────────────────────────── -->
+    <section data-route="capture" aria-label="Capture"></section>
+
+    <!-- ── Results ────────────────────────────────────────────────── -->
+    <section data-route="results" aria-label="Results"></section>
+
+    <!-- ── History ────────────────────────────────────────────────── -->
+    <section data-route="history" aria-label="History"></section>
+
+    <!-- ── Settings ──────────────────────────────────────────────── -->
+    <section data-route="settings" aria-label="Settings"></section>
+
+    <!-- ── Developer diagnostics ──────────────────────────────────── -->
+    <section data-route="test" aria-label="Module diagnostics"></section>
+
+    <!-- Visually-hidden live region for screen reader announcements -->
+    <div id="sr-announce" aria-live="assertive" aria-atomic="true" class="visually-hidden"></div>
+
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
