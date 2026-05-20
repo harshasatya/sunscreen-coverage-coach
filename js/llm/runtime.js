@@ -27,7 +27,9 @@ const BACKENDS = { gemma3n, smolvlm, claude };
  */
 export async function detectTier() {
   const hasGPU = !!navigator.gpu;
-  const ram = navigator.deviceMemory ?? 4; // default 4 GB if API unavailable
+  const ram = navigator.deviceMemory ?? 4;
+
+  console.log(`[runtime] Detecting tier — GPU: ${hasGPU}, RAM: ${ram} GB`);
 
   if (hasGPU && ram >= 6 && await gemma3n.isAvailable()) return 'gemma3n';
   if ((hasGPU || ram >= 3) && await smolvlm.isAvailable())  return 'smolvlm';
@@ -41,8 +43,12 @@ export async function detectTier() {
  */
 export async function getActiveTier() {
   const { vlmTier } = getSettings();
-  if (vlmTier) return vlmTier;
+  if (vlmTier) {
+    console.log(`[runtime] Active tier (from settings): ${vlmTier}`);
+    return vlmTier;
+  }
   const detected = await detectTier();
+  console.log(`[runtime] Detected tier: ${detected}`);
   saveSettings({ vlmTier: detected });
   return detected;
 }
@@ -52,6 +58,7 @@ export async function getActiveTier() {
  * @param {'gemma3n'|'smolvlm'|'claude'|'heuristics'} tier
  */
 export function setBackend(tier) {
+  console.log(`[runtime] Backend set to: ${tier}`);
   saveSettings({ vlmTier: tier });
 }
 
@@ -62,20 +69,22 @@ export function setBackend(tier) {
  */
 export async function loadModel(progressCallback) {
   const tier = await getActiveTier();
+  console.log(`[runtime] loadModel called for tier: ${tier}`);
   const backend = BACKENDS[tier];
   if (backend?.loadModel) {
     await backend.loadModel(progressCallback);
   } else {
+    // heuristics or claude — no download needed
+    console.log(`[runtime] No model download needed for tier: ${tier}`);
     progressCallback?.(1.0);
   }
 }
 
 /**
  * Runs VLM analysis via the active backend.
- *
- * @param {string}                  faceImg    - base64 JPEG of full face (512×512)
- * @param {Record<string, string>}  crops      - { zoneId: base64JPEG }, up to 3 entries
- * @param {string[]}                zoneLabels - display names matching crops insertion order
+ * @param {string}                  faceImg
+ * @param {Record<string, string>}  crops
+ * @param {string[]}                zoneLabels
  * @returns {Promise<import('./prompts.js').VLMResponse>}
  */
 export async function analyze(faceImg, crops, zoneLabels) {
@@ -83,15 +92,13 @@ export async function analyze(faceImg, crops, zoneLabels) {
   const backend = BACKENDS[tier];
 
   if (!backend) {
-    // Tier 4: heuristics-only — return null signal so coverage-analyzer uses
-    // symmetry/uniformity scores alone
     return _heuristicsPlaceholder(zoneLabels);
   }
 
   try {
     return await backend.analyze(faceImg, crops, zoneLabels);
   } catch (err) {
-    console.error(`[runtime] Backend "${tier}" failed; using placeholder`, err);
+    console.error(`[runtime] Backend "${tier}" failed:`, err);
     return _heuristicsPlaceholder(zoneLabels);
   }
 }
