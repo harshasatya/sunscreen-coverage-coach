@@ -24,7 +24,7 @@ export async function mount(navigate) {
   const section = document.querySelector('[data-route="capture"]');
   if (!section) return;
 
-  const settings = getSettings();
+  const settings   = getSettings();
   const preciseMode = settings.preciseModeEnabled ?? false;
 
   section.innerHTML = `
@@ -97,6 +97,9 @@ export async function mount(navigate) {
     return;
   }
 
+  // Show active AI tier so user knows what to expect
+  _displayActiveTier(statusMsg);
+
   // ── Face detection loop ───────────────────────────────────────────────────
   _stopDetection = startLiveDetection(videoEl, overlayEl);
 
@@ -137,12 +140,29 @@ export function unmount() {
   if (_stopDetection) { _stopDetection(); _stopDetection = null; }
 }
 
+// ─── Active tier display ──────────────────────────────────────────────────────
+
+async function _displayActiveTier(statusEl) {
+  try {
+    const tier = await runtime.getActiveTier();
+    const hints = {
+      smolvlm:    'AI: SmolVLM — ~500 MB download on first capture',
+      gemma3n:    'AI: Gemma 3N — ~3 GB download on first capture',
+      claude:     'AI: Claude API (cloud, sends photo to Anthropic)',
+      heuristics: 'AI: Heuristics only — no model. Tap ⚙️ to choose SmolVLM or Claude.',
+    };
+    if (statusEl) statusEl.textContent = hints[tier] ?? `AI: ${tier}`;
+  } catch (err) {
+    console.warn('[capture] Could not get active tier:', err);
+  }
+}
+
 // ─── Model progress UI ────────────────────────────────────────────────────────
 
 function _showModelProgress(pct, label) {
-  const wrap  = document.getElementById('model-progress');
-  const bar   = document.getElementById('model-progress-bar');
-  const lbl   = document.getElementById('model-progress-label');
+  const wrap = document.getElementById('model-progress');
+  const bar  = document.getElementById('model-progress-bar');
+  const lbl  = document.getElementById('model-progress-label');
   if (!wrap) return;
   wrap.style.display = pct >= 1 ? 'none' : 'block';
   if (bar) bar.style.width = `${Math.round(pct * 100)}%`;
@@ -150,10 +170,10 @@ function _showModelProgress(pct, label) {
 }
 
 function _modelProgressCallback(p) {
-  const pct = Math.min(p, 0.999); // keep bar visible until fully done
+  const pct   = Math.min(p, 0.999);
   const label = pct < 0.05
-    ? 'Loading AI model…'
-    : `Downloading AI model — ${Math.round(pct * 100)}%`;
+    ? 'Loading AI model… (this may take several minutes on mobile)'
+    : `Downloading AI model — ${Math.round(pct * 100)}% (do not close the tab)`;
   _showModelProgress(pct, label);
 }
 
@@ -165,7 +185,6 @@ async function _doQuickCapture(videoEl, captureBtn, statusMsg, navigate, setting
   statusMsg.textContent  = '';
 
   try {
-    // Load model with visible progress bar (no-op if already loaded)
     await runtime.loadModel(_modelProgressCallback);
     _showModelProgress(1, '');
 
@@ -190,14 +209,13 @@ async function _doQuickCapture(videoEl, captureBtn, statusMsg, navigate, setting
 // ─── Precise Mode ─────────────────────────────────────────────────────────────
 
 function _runPreciseMode(videoEl, captureBtn, statusMsg, navigate, settings) {
-  let baselineDataUrl  = null;
+  let baselineDataUrl   = null;
   let baselineLandmarks = null;
 
   captureBtn.addEventListener('click', async () => {
     captureBtn.disabled = true;
 
     if (!baselineDataUrl) {
-      // Step 1: capture baseline
       captureBtn.textContent = 'Capturing…';
       try {
         baselineDataUrl   = captureFrame(videoEl);
@@ -215,7 +233,6 @@ function _runPreciseMode(videoEl, captureBtn, statusMsg, navigate, settings) {
         statusMsg.textContent  = `Error: ${err.message}`;
       }
     } else {
-      // Step 2: load model then analyze with differential
       captureBtn.textContent = 'Loading AI…';
       statusMsg.textContent  = '';
       try {
@@ -261,7 +278,6 @@ async function _fetchUV() {
     const { uvIndex, description } = await getCurrentUVIndex(lat, lon);
     const badge = document.getElementById('uv-badge');
     if (badge) {
-      const level = describeUV(uvIndex);
       const color = uvIndex >= 8 ? 'var(--color-danger)' : uvIndex >= 6 ? 'var(--color-warning)' : 'inherit';
       badge.innerHTML = `UV Index: <strong style="color:${color}">${uvIndex}</strong> (${description})`;
     }

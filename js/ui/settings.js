@@ -14,8 +14,10 @@ export async function mount(navigate) {
   const section = document.querySelector('[data-route="settings"]');
   if (!section) return;
 
-  const s       = getSettings();
+  const s        = getSettings();
   const detected = await detectTier();
+  // Use the saved tier if present, otherwise fall back to auto-detected
+  const current  = s.vlmTier ?? detected;
 
   section.innerHTML = `
     <div style="display:flex; align-items:center; gap:.75rem; margin-bottom:.75rem">
@@ -27,10 +29,10 @@ export async function mount(navigate) {
     <div class="card" style="margin-bottom:.75rem">
       <h3 style="font-size:.95rem; margin-bottom:.5rem">Analysis Backend</h3>
       <p class="text-secondary" style="font-size:.8rem; margin-bottom:.5rem">
-        Detected capability: <strong>${detected}</strong>
+        Auto-detected: <strong>${detected}</strong> &nbsp;|&nbsp; Current: <strong>${current}</strong>
       </p>
-      ${_tierRadios(s.vlmBackend ?? detected)}
-      <div id="api-key-wrap" style="margin-top:.75rem; ${(s.vlmBackend ?? detected) === 'claude' ? '' : 'display:none'}">
+      ${_tierRadios(current)}
+      <div id="api-key-wrap" style="margin-top:.75rem; ${current === 'claude' ? '' : 'display:none'}">
         <label style="font-size:.85rem; display:block; margin-bottom:.25rem">
           Claude API key
           <input id="claude-api-key" type="password" placeholder="sk-ant-…"
@@ -126,8 +128,8 @@ export async function mount(navigate) {
     if (backend) setBackend(backend);
 
     const status = document.getElementById('save-status');
-    status.textContent = 'Settings saved.';
-    setTimeout(() => { status.textContent = ''; }, 2000);
+    status.textContent = `Saved. Backend: ${backend ?? current}`;
+    setTimeout(() => { status.textContent = ''; }, 2500);
   });
 
   document.getElementById('reset-btn').addEventListener('click', () => {
@@ -141,10 +143,10 @@ export async function mount(navigate) {
 
 function _tierRadios(selected) {
   const tiers = [
-    { id: 'gemma3n',    label: 'On-device Gemma 3n',   desc: '~3 GB download, best accuracy' },
-    { id: 'smolvlm',    label: 'On-device SmolVLM',    desc: '~500 MB download' },
-    { id: 'claude',     label: 'Claude API (cloud)',   desc: 'Fast, no download, sends photo' },
-    { id: 'heuristics', label: 'Heuristics only',      desc: 'No AI, basic mode' },
+    { id: 'gemma3n',    label: 'On-device Gemma 3N',  desc: '~3 GB download, best accuracy, needs WebGPU' },
+    { id: 'smolvlm',    label: 'On-device SmolVLM',   desc: '~500 MB download, works on most phones' },
+    { id: 'claude',     label: 'Claude API (cloud)',  desc: 'Fast, no download, sends photo to Anthropic' },
+    { id: 'heuristics', label: 'Heuristics only',     desc: 'No AI model — basic reflection analysis only' },
   ];
   return `<div style="display:flex; flex-direction:column; gap:.4rem">
     ${tiers.map(({ id, label, desc }) => `
